@@ -35,7 +35,7 @@ images:
 
 substitutions:
   _AR_HOST: 'asia-northeast1-docker.pkg.dev' 
-  _AR_REPO: 'my-fastapi-app'                   
+  _AR_REPO: 'google-tap'                   
   _SERVICE_NAME: 'my-app-service'
   _GKE_CLUSTER: 'tap-cluster'            
   _GKE_LOCATION: 'asia-northeast1'
