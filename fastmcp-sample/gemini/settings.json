@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "Dice Roller": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--with",
+        "fastmcp",
+        "fastmcp",
+        "run",
+        "/home/user/tap-honda/server.py"
+      ]
+    },
+    "dice-roller": {
+      "command": "http://localhost:8000/mcp",
+      "args": []
+    }
+  }
+}
