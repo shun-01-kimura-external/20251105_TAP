@@ -39,3 +39,6 @@ substitutions:
   _SERVICE_NAME: 'my-app-service'
   _GKE_CLUSTER: 'tap-cluster'            
   _GKE_LOCATION: 'asia-northeast1'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
