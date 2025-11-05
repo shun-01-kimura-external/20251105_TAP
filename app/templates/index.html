@@ -1,0 +1,69 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Number</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Guess the Number</h1>
+        <p id="message-area">Press "Start Game" to begin.</p>
+        <form id="game-form">
+            <input type="number" id="guess-input" min="1" max="100" placeholder="Enter your guess" disabled>
+            <button type="submit" id="guess-button" disabled>Guess</button>
+        </form>
+        <button id="start-button">Start Game</button>
+    </div>
+
+    <script>
+        const messageArea = document.getElementById('message-area');
+        const gameForm = document.getElementById('game-form');
+        const guessInput = document.getElementById('guess-input');
+        const guessButton = document.getElementById('guess-button');
+        const startButton = document.getElementById('start-button');
+
+        async function startGame() {
+            const response = await fetch('/start', { method: 'POST' });
+            const data = await response.json();
+            messageArea.textContent = data.message;
+            guessInput.disabled = false;
+            guessButton.disabled = false;
+            startButton.textContent = 'Restart Game';
+            guessInput.focus();
+        }
+
+        async function makeGuess(event) {
+            event.preventDefault();
+            const guess = parseInt(guessInput.value, 10);
+            if (isNaN(guess)) {
+                messageArea.textContent = 'Please enter a valid number.';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('guess', guess);
+
+            const response = await fetch('/guess', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            messageArea.textContent = data.message;
+            guessInput.value = '';
+
+            if (data.game_over) {
+                guessInput.disabled = true;
+                guessButton.disabled = true;
+            }
+            guessInput.focus();
+        }
+
+        startButton.addEventListener('click', startGame);
+        gameForm.addEventListener('submit', makeGuess);
+    </script>
+</body>
+</html>
