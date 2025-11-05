@@ -1,0 +1,41 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - 'build'
+  - '-t'
+  - '${_AR_HOST}/${PROJECT_ID}/${_AR_REPO}/${_SERVICE_NAME}:${SHORT_SHA}'
+  - '.'
+
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - 'push'
+  - '${_AR_HOST}/${PROJECT_ID}/${_AR_REPO}/${_SERVICE_NAME}:${SHORT_SHA}'
+
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    gcloud container clusters get-credentials ${_GKE_CLUSTER} --region ${_GKE_LOCATION} --project ${PROJECT_ID}
+    sed "s|IMAGENAME|${_AR_HOST}/${PROJECT_ID}/${_AR_REPO}/${_SERVICE_NAME}:${SHORT_SHA}|g" manifest/deployment.yaml > deployment_updated.yaml
+
+- name: 'gcr.io/cloud-builders/kubectl'
+  args:
+  - 'apply'
+  - '-f'
+  - 'deployment_updated.yaml'
+  - '-f'
+  - 'manifest/service.yaml'
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=${_GKE_LOCATION}'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=${_GKE_CLUSTER}'
+
+images:
+- '${_AR_HOST}/${PROJECT_ID}/${_AR_REPO}/${_SERVICE_NAME}:${SHORT_SHA}'
+
+substitutions:
+  _AR_HOST: 'asia-northeast1-docker.pkg.dev' 
+  _AR_REPO: 'my-fastapi-app'                   
+  _SERVICE_NAME: 'my-app-service'
+  _GKE_CLUSTER: 'tap-cluster'            
+  _GKE_LOCATION: 'asia-northeast1'
